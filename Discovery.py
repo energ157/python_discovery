@@ -8,13 +8,17 @@ def Main():
 
 def Discover():
     Adapters = calculateAdapters()
-    Adapters = ["Ethernet"]
     for Adapter in Adapters:
         ip = calculateIP(Adapter)
         subnetMask = calculateSubnet(Adapter)
         print(Adapter)
         print("Assigned IP:", ip)
-        ICMPBasedHostDetection(ip, subnetMask)
+        if ip[:7] == "169.254":
+            print("APIPA address detected, skipping")
+        else:
+            ICMPBasedHostDetection(ip, subnetMask)
+        print("===========================")
+        print()
     
 def Powershell_execution(command):
     output = subprocess.run(["powershell", "-Command",command],
@@ -59,7 +63,7 @@ def checkIP(addr):
     command = f'(Test-Connection "{addr}" -Count 1 -Quiet)'
     check = Powershell_execution(command)
     if 'True' in check:
-        print(addr, "is up!")
+        print(addr, "is up!\n")
 
     
     
