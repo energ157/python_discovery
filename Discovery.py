@@ -1,12 +1,12 @@
-import subprocess
-from concurrent.futures import ThreadPoolExecutor
-import ipaddress
+from PowerShell import *
+from NetworkFunctions import *
 
-def Main():
-    print("Welcome to the Network Discovery Program")
-    Discover()
+def detectAdaptersAndDiscover():
+    Adapters = calculateAdapters()
+    
+    
 
-def Discover():
+def Discover(Adapters):
     Adapters = calculateAdapters()
     for Adapter in Adapters:
         ip = calculateIP(Adapter)
@@ -20,36 +20,9 @@ def Discover():
         print("===========================")
         print()
     
-def Powershell_execution(command):
-    output = subprocess.run(["powershell", "-Command",command],
-    capture_output = True,
-    text = True,
-    creationflags = subprocess.CREATE_NO_WINDOW
-    )
 
-    return output.stdout
     
 
-def calculateAdapters():
-    Adapters = []
-    command = f'(Get-NetIPConfiguration).InterFaceAlias'
-    results = Powershell_execution(command)
-    for result in results.splitlines():
-        Adapters.append(result)
-
-    return Adapters
-
-
-def calculateIP(Adapter):
-    command = f'(Get-NetIPConfiguration | Where-Object {{ $_.InterfaceAlias -eq "{Adapter}" }}).IPv4Address.IPAddress'
-    ip = Powershell_execution(command)
-    return ip
-
-
-def calculateSubnet(Adapter):
-    command = f'(Get-NetIPConfiguration | Where-Object {{ $_.InterfaceAlias -eq "{Adapter}" }}).IPv4Address.PrefixLength'
-    subnetMask = Powershell_execution(command)
-    return subnetMask
 
 def ICMPBasedHostDetection(ip, subnet):
     ip = ip.strip()
@@ -64,12 +37,3 @@ def checkIP(addr):
     check = Powershell_execution(command)
     if 'True' in check:
         print(addr, "is up!\n")
-
-    
-    
-     
-
-    
-
-Main()
-    
