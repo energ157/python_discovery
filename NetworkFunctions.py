@@ -10,8 +10,6 @@ def calculateAdapters():
         Adapters[key] = [result]
         key += 1
     Adapters[key] = ["All Adapters"]
-    for key, value in Adapters.items():
-        print(f"({key}) {', '.join(value)}")
     return Adapters
 
 
